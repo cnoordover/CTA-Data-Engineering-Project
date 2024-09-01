@@ -1,0 +1,34 @@
+# Performs two data quality checks. One to check for NULL values, and the other to ensure I have unique run number values.
+import sys
+import awswrangler as wr
+
+# this check counts the number of NULL rows in the temp_C column
+# if any rows are NULL, the check returns a number > 0
+NULL_DQ_CHECK = f"""
+SELECT 
+    SUM(CASE WHEN route IS NULL THEN 1 ELSE 0 END) AS null_route
+FROM "serverless_db_de_project_cnoord12"."first_parquet_cta_train_my_first_data_engineering_project_2024_workflow"
+;
+"""
+# run the quality check
+df = wr.athena.read_sql_query(sql=NULL_DQ_CHECK, database="serverless_db_de_project_cnoord12")
+
+UNIQUE_RUN_NUMBER_CHECK = f"""
+SELECT
+    run_number
+    ,COUNT(*) AS count_duplicates
+FROM "serverless_db_de_project_cnoord12"."first_parquet_cta_train_my_first_data_engineering_project_2024_workflow"
+GROUP BY run_number
+HAVING COUNT(*) > 1
+;
+"""
+# run the quality check
+dg = wr.athena.read_sql_query(sql=UNIQUE_RUN_NUMBER_CHECK, database="serverless_db_de_project_cnoord12")
+
+
+# exit if we get a result > 0
+# else, the check was successful
+if  df['null_route'][0] > 0 or len(dg) > 0:
+    sys.exit('Results returned. Quality check failed.')
+else:
+    print('Quality check passed.')
