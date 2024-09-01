@@ -1,0 +1,53 @@
+import sys
+import boto3
+
+client = boto3.client('athena')
+
+SOURCE_TABLE_NAME = 'first_cta_train_data_my_first_data_engineering_project_2024'
+NEW_TABLE_NAME = 'first_parquet_cta_train_my_first_data_engineering_project_2024_workflow'
+NEW_TABLE_S3_BUCKET = 's3://cta-data-new-parquet-table-bucket-2024/'
+MY_DATABASE = 'serverless_db_de_project_cnoord12'
+QUERY_RESULTS_S3_BUCKET = 's3://athena-bucket-serverless-de-project-cnoord12'
+
+# Refresh the table
+queryStart = client.start_query_execution(
+    QueryString = f"""
+    CREATE TABLE "{NEW_TABLE_NAME}" WITH
+    (external_location='{NEW_TABLE_S3_BUCKET}',
+    format='PARQUET',
+    write_compression='SNAPPY',
+    partitioned_by = ARRAY['route'])
+    AS
+
+    SELECT
+        timestamp_data_accessed
+        ,DATE_FORMAT(parse_datetime(timestamp_data_accessed, 'yyyy-MM-dd''T''HH:mm:ss'), '%I:%i:%s %p') AS data_accessed_AM_PM_time
+        ,run_number
+        ,next_station
+        ,latitude
+        ,longitude
+        ,final_destination
+        ,route
+    FROM "{MY_DATABASE}"."{SOURCE_TABLE_NAME}"
+
+    ;
+    """,
+    QueryExecutionContext = {
+        'Database': f'{MY_DATABASE}'
+    },
+    ResultConfiguration = { 'OutputLocation': f'{QUERY_RESULTS_S3_BUCKET}'}
+)
+
+# list of responses
+resp = ["FAILED", "SUCCEEDED", "CANCELLED"]
+
+# get the response
+response = client.get_query_execution(QueryExecutionId=queryStart["QueryExecutionId"])
+
+# wait until query finishes
+while response["QueryExecution"]["Status"]["State"] not in resp:
+    response = client.get_query_execution(QueryExecutionId=queryStart["QueryExecutionId"])
+
+# if it fails, exit and give the Athena error message in the logs
+if response["QueryExecution"]["Status"]["State"] == 'FAILED':
+    sys.exit(response["QueryExecution"]["Status"]["StateChangeReason"])
