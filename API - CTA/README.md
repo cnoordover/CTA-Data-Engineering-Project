@@ -5,6 +5,10 @@ The Locations API provides the location (in lat and lon) of every train in the C
 
 Additional information provided by Locations API: next station, final destination, run number, route color
 
+## Example Output from API 
+
+![image](https://github.com/user-attachments/assets/1e943c98-c66b-46e9-a0ab-62ac2446dc23)
+
 ## Information about API
 Directly published by CTA: https://www.transitchicago.com/developers/ttdocs/#locations
 
