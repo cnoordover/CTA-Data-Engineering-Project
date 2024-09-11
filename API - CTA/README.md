@@ -27,7 +27,7 @@ Use URL query string method.
 ## Response fields:
 Note: variables that I will be extracting are bolded.
 
-![image](https://github.com/user-attachments/assets/d630af62-b494-4beb-acee-687c4d1edc31)
+![image](https://github.com/user-attachments/assets/8a687fbf-1c5b-4bf8-8750-1c4e3f18dd11)
 
 ## Example Output from API 
 You see an example for the output of just one train of one route in the system. 
