@@ -6,14 +6,12 @@ The Locations API provides the location (in lat and lon) of every train in the C
 Additional information provided by Locations API: next station, final destination, run number, route color
 
 ## What is in this Data set? (data we will use is bolded)
-**| Name | Description |**
-| ---- | -------------|
-| ctatt | Root element |
-**|./tmst | Shows time when response was generated in format: yyyyMMdd HH:mm:ss (24-hour format, time local to Chicago) |**
-
-./errCd             Numeric error code (see appendices)
-
-./errNm             Textual error description/message (see appendices)
+**| Name          | Description                                                                                                 |**
+  | :---:         | :---------------------------------------------------------------------------------------------------------: |
+  | ctatt         | Root element                                                                                                |
+**|./tmst         | Shows time when response was generated in format: yyyyMMdd HH:mm:ss (24-hour format, time local to Chicago) |**
+  |./errCd        | Numeric error code (see appendices)                                                                         |
+  |./errNm        | Textual error description/message (see appendices)                                                          |
 
 **./route name=       Container element (one per route in response), name attribute indicates route per GTFS-matching route identifiers (see appendices)**
 
